@@ -14,8 +14,8 @@ export class HeroResolver {
   private timePeriodRepo = AppDataSource.getRepository(Time_Period);
 
   @Query(() => [Hero])
-  async heroes(): Promise<Hero[]> {
-    return this.heroRepo.find();
+  async heroes(@Arg("timePeriodId", () => Int) timePeriodId: number): Promise<Hero[]> {
+    return this.heroRepo.find({where: {time_period: {id: timePeriodId}}});
   }
 
   @Query(() => Hero, { nullable: true })

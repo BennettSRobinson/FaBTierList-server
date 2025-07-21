@@ -32,7 +32,7 @@ input HeroUpdateInput {
 }
 
 type Query {
-    heroes: [Hero],
+    heroes(timePeriodId: Int!): [Hero],
     hero(id: Int!): Hero,
     time_period: [Time_Period]
 }

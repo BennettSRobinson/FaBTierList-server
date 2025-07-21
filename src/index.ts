@@ -3,6 +3,7 @@ import express from "express";
 import { buildSchema } from "type-graphql";
 import { AppDataSource } from "./data_source";
 import { HeroResolver } from "./schema/resolvers/hero_resolver";
+import 'dotenv/config';
 
 async function bootstrap() {
   await AppDataSource.initialize();
