@@ -1,0 +1,44 @@
+type Hero {
+    id: ID!,
+    win_rate: Int!,
+    total_talishar_plays: Int!,
+    hero_details: Hero_Image!,
+    time_period: Time_Period!
+}
+
+type Hero_Image {
+    id: ID!,
+    url: String!,
+    name: String!
+}
+
+type Time_Period {
+    id: ID!,
+    year: String!,
+    month: String!
+}
+
+input HeroInput {
+    name: String!,
+    url: String!,
+    win_rate: Int!,
+    total_talishar_plays: Int!,
+    id_time_period: Int!
+}
+
+input HeroUpdateInput {
+    win_rate: Int!,
+    total_talishar_plays: Int!,
+}
+
+type Query {
+    heroes: [Hero],
+    hero(id: Int!): Hero,
+    time_period: [Time_Period]
+}
+
+type Mutation {
+    createHero(data: HeroInput!): Hero,
+    updateHero(id: Int!, data: HeroUpdateInput!): Hero,
+    deleteHero(id: Int!): Hero
+}
