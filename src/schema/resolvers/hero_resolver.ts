@@ -6,6 +6,8 @@ import { HeroUpdateInput } from "../inputs/update_hero";
 import { AppDataSource } from "../../data_source";
 import { Hero_Image } from "../entities/hero_image";
 import { Time_Period } from "../entities/time_period";
+import { tierListAssign } from "../../utils";
+import { Tier_Map } from "../entities/tier_map";
 
 @Resolver()
 export class HeroResolver {
@@ -13,9 +15,14 @@ export class HeroResolver {
   private heroImageRepo = AppDataSource.getRepository(Hero_Image);
   private timePeriodRepo = AppDataSource.getRepository(Time_Period);
 
-  @Query(() => [Hero])
-  async heroes(@Arg("timePeriodId", () => Int) timePeriodId: number): Promise<Hero[]> {
-    return this.heroRepo.find({where: {time_period: {id: timePeriodId}}});
+  @Query(() => Tier_Map)
+  async heroes(@Arg("timePeriodId", () => Int) timePeriodId: number): Promise<Tier_Map> {
+    try {
+      const heroeList: Hero[] = await this.heroRepo.find({where: {time_period: {id: timePeriodId}}});
+      return tierListAssign(heroeList)
+    } catch(e){
+      throw new Error(e)
+    }
   }
 
   @Query(() => Hero, { nullable: true })
@@ -31,10 +38,13 @@ export class HeroResolver {
       heroImage = this.heroImageRepo.create({ name: data.name, url: data.url });
       await this.heroImageRepo.save(heroImage);
     }
-
     // Find the time period by id
     const timePeriod = await this.timePeriodRepo.findOne({ where: { id: data.id_time_period } });
     if (!timePeriod) throw new Error("Invalid time_period id");
+
+    // Finds hero if already exits in time period
+    const foundHero = await this.heroRepo.findOne({where: {hero_details: heroImage, time_period: timePeriod}});
+    if(foundHero) console.error('Hero already exits in this time period')
 
     const hero = this.heroRepo.create({
       win_rate: data.win_rate,

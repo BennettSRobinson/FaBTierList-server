@@ -12,7 +12,7 @@ export class Time_Period {
 
   @Field()
   @Column()
-  year: string;
+  year: number;
 
   @Field()
   @Column()

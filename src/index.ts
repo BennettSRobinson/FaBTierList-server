@@ -3,13 +3,14 @@ import express from "express";
 import { buildSchema } from "type-graphql";
 import { AppDataSource } from "./data_source";
 import { HeroResolver } from "./schema/resolvers/hero_resolver";
+import { TimePeriodResolver } from "./schema/resolvers/time_period_resolver";
 import 'dotenv/config';
 
 async function bootstrap() {
   await AppDataSource.initialize();
 
   const schema = await buildSchema({
-    resolvers: [HeroResolver],
+    resolvers: [HeroResolver, TimePeriodResolver],
   });
 
   const server = new ApolloServer({ schema });

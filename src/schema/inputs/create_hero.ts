@@ -6,8 +6,8 @@ export class HeroInput {
   @Field()
   name: string;
 
-  @Field()
-  url: string;
+  @Field({nullable: true})
+  url?: string;
 
   @Field(() => Int)
   win_rate: number;
@@ -18,3 +18,7 @@ export class HeroInput {
   @Field(() => Int)
   id_time_period: number;
 }
+
+
+
+//"Variable "$data" of required type "HeroInput!" was not provided."

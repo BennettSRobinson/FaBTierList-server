@@ -18,9 +18,17 @@ type Time_Period {
     month: String!
 }
 
+type TierMap {
+    S: [Hero!],
+    A: [Hero!],
+    B: [Hero!],
+    C: [Hero!],
+    D: [Hero!]
+}
+
 input HeroInput {
     name: String!,
-    url: String!,
+    url: String,
     win_rate: Int!,
     total_talishar_plays: Int!,
     id_time_period: Int!
@@ -32,9 +40,9 @@ input HeroUpdateInput {
 }
 
 type Query {
-    heroes(timePeriodId: Int!): [Hero],
+    heroes(timePeriodId: Int!): TierMap,
     hero(id: Int!): Hero,
-    time_period: [Time_Period]
+    time_period(year: Int!, month: String!): Time_Period
 }
 
 type Mutation {
