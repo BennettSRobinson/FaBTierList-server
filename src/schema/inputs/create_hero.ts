@@ -4,6 +4,9 @@ import { InputType, Field, Int } from "type-graphql";
 @InputType()
 export class HeroInput {
   @Field()
+  password: string
+  
+  @Field()
   name: string;
 
   @Field({nullable: true})

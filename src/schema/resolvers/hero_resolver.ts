@@ -8,9 +8,11 @@ import { Hero_Image } from "../entities/hero_image";
 import { Time_Period } from "../entities/time_period";
 import { tierListAssign } from "../../utils";
 import { Tier_Map } from "../entities/tier_map";
+import { Admin } from "../entities/admin";
 
 @Resolver()
 export class HeroResolver {
+  private adminRepo = AppDataSource.getRepository(Admin);
   private heroRepo = AppDataSource.getRepository(Hero);
   private heroImageRepo = AppDataSource.getRepository(Hero_Image);
   private timePeriodRepo = AppDataSource.getRepository(Time_Period);
@@ -32,28 +34,38 @@ export class HeroResolver {
 
   @Mutation(() => Hero)
   async createHero(@Arg("data") data: HeroInput): Promise<Hero> {
-    // Find or create related Hero_Image (assuming you want to create it here)
-    let heroImage = await this.heroImageRepo.findOne({ where: { name: data.name } });
-    if (!heroImage) {
-      heroImage = this.heroImageRepo.create({ name: data.name, url: data.url });
-      await this.heroImageRepo.save(heroImage);
+    try {
+      const admin = await this.adminRepo.findOne({where: {id: 1}});
+      const isValid = await admin.validatePassword(data.password);
+      
+      if(admin && isValid){
+        let heroImage = await this.heroImageRepo.findOne({ where: { name: data.name } });
+        if (!heroImage) {
+          heroImage = this.heroImageRepo.create({ name: data.name, url: data.url });
+          await this.heroImageRepo.save(heroImage);
+        }
+        // Find the time period by id
+        const timePeriod = await this.timePeriodRepo.findOne({ where: { id: data.id_time_period } });
+        if (!timePeriod) console.error("Invalid time_period id");
+    
+        // Finds hero if already exits in time period
+        const foundHero = await this.heroRepo.findOne({where: {hero_details: heroImage, time_period: timePeriod}});
+        if(foundHero) console.error('Hero already exits in this time period')
+    
+        const hero = this.heroRepo.create({
+          win_rate: data.win_rate,
+          total_talishar_plays: data.total_talishar_plays,
+          hero_details: heroImage,
+          time_period: timePeriod,
+        });
+    
+        return this.heroRepo.save(hero);
+      } else {
+        console.error("Incorrect Password")
+      }
+    } catch (err){
+      console.error("Something went Wrong when creating a new hero", err);
     }
-    // Find the time period by id
-    const timePeriod = await this.timePeriodRepo.findOne({ where: { id: data.id_time_period } });
-    if (!timePeriod) throw new Error("Invalid time_period id");
-
-    // Finds hero if already exits in time period
-    const foundHero = await this.heroRepo.findOne({where: {hero_details: heroImage, time_period: timePeriod}});
-    if(foundHero) console.error('Hero already exits in this time period')
-
-    const hero = this.heroRepo.create({
-      win_rate: data.win_rate,
-      total_talishar_plays: data.total_talishar_plays,
-      hero_details: heroImage,
-      time_period: timePeriod,
-    });
-
-    return this.heroRepo.save(hero);
   }
 
   @Mutation(() => Hero)
@@ -61,21 +73,41 @@ export class HeroResolver {
     @Arg("id", () => Int) id: number,
     @Arg("data") data: HeroUpdateInput
   ): Promise<Hero | null> {
-    const hero = await this.heroRepo.findOne({ where: { id } });
-    if (!hero) return null;
-
-    hero.win_rate = data.win_rate;
-    hero.total_talishar_plays = data.total_talishar_plays;
-
-    return this.heroRepo.save(hero);
+    try {
+      const admin = await this.adminRepo.findOne({where: {id: 1}})
+      const isValid = await admin.validatePassword(data.password);
+      if(admin && isValid){
+        const hero = await this.heroRepo.findOne({ where: { id } });
+        if (!hero) return null;
+    
+        hero.win_rate = data.win_rate;
+        hero.total_talishar_plays = data.total_talishar_plays;
+    
+        return this.heroRepo.save(hero);
+      } else {
+        console.error("Incorrect password")
+      }
+    } catch(err){
+      console.error("Something Went wrong when updating a hero", err)
+    }
   }
 
   @Mutation(() => Hero)
-  async deleteHero(@Arg("id", () => Int) id: number): Promise<Hero | null> {
-    const hero = await this.heroRepo.findOne({ where: { id } });
-    if (!hero) return null;
-
-    await this.heroRepo.remove(hero);
-    return hero;
+  async deleteHero(@Arg("id", () => Int) id: number, @Arg("password") password: string): Promise<Hero | null> {
+    try {
+      const admin = await this.adminRepo.findOne({where: {id: 1}})
+      const isValid = await admin.validatePassword(password);
+      if(admin && isValid){
+        const hero = await this.heroRepo.findOne({ where: { id } });
+        if (!hero) return null;
+    
+        await this.heroRepo.remove(hero);
+        return hero;
+      } else {
+        console.error("Incorrect password")
+      }
+    } catch(err){
+      console.error("Something went wrong when deleting a hero", err)
+    }
   }
 }

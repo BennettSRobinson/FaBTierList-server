@@ -4,6 +4,7 @@ import { Hero } from "./schema/entities/hero";
 import { Hero_Image } from "./schema/entities/hero_image";
 import { Time_Period } from "./schema/entities/time_period";
 import 'dotenv/config';
+import { Admin } from "./schema/entities/admin";
 
 export const AppDataSource = new DataSource({
   type: "mysql", // or your db type
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASS,
   database: process.env.DATABASE_USER,
-  entities: [Hero, Hero_Image, Time_Period],
+  entities: [Hero, Hero_Image, Time_Period, Admin],
   synchronize: true, // only for dev, be careful in prod
   logging: false,
 });

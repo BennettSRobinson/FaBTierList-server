@@ -1,3 +1,8 @@
+type Admin {
+    id: ID!,
+    password: string!
+}
+
 type Hero {
     id: ID!,
     win_rate: Int!,
@@ -27,26 +32,30 @@ type TierMap {
 }
 
 input HeroInput {
+    password: string!,
     name: String!,
     url: String,
     win_rate: Int!,
     total_talishar_plays: Int!,
-    id_time_period: Int!
+    id_time_period: Int! 
 }
 
 input HeroUpdateInput {
+    password: string!,
     win_rate: Int!,
     total_talishar_plays: Int!,
 }
 
 type Query {
     heroes(timePeriodId: Int!): TierMap,
+    admin(): Admin
     hero(id: Int!): Hero,
     time_period(year: Int!, month: String!): Time_Period
 }
 
 type Mutation {
+    createAdmin(): Admin
     createHero(data: HeroInput!): Hero,
     updateHero(id: Int!, data: HeroUpdateInput!): Hero,
-    deleteHero(id: Int!): Hero
+    deleteHero(id: Int!, password: string!): Hero
 }
