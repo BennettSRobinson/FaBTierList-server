@@ -4,6 +4,7 @@ import { buildSchema } from "type-graphql";
 import { AppDataSource } from "./data_source";
 import { HeroResolver } from "./schema/resolvers/hero_resolver";
 import { TimePeriodResolver } from "./schema/resolvers/time_period_resolver";
+import cors from 'cors';
 import 'dotenv/config';
 
 async function bootstrap() {
@@ -17,10 +18,12 @@ async function bootstrap() {
   await server.start();
 
   const app = express();
+  app.use(cors())
   server.applyMiddleware({ app });
 
-  app.listen(4000, () => {
-    console.log("Server started on http://localhost:4000/graphql");
+  const PORT = process.env.PORT || 4000
+  app.listen(PORT, () => {
+    console.log(`Server started on http://localhost:${PORT}/graphql`);
   });
 }
 
