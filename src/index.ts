@@ -14,7 +14,7 @@ async function bootstrap() {
     resolvers: [HeroResolver, TimePeriodResolver],
   });
 
-  const server = new ApolloServer({ schema });
+  const server = new ApolloServer({ schema, persistedQueries: false});
   await server.start();
 
   const app = express();
