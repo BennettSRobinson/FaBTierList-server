@@ -6,7 +6,7 @@ import { HeroUpdateInput } from "../inputs/update_hero";
 import { AppDataSource } from "../../data_source";
 import { Hero_Image } from "../entities/hero_image";
 import { Time_Period } from "../entities/time_period";
-import { tierListAssign } from "../../utils";
+import { newTierThreshold } from "../../utils";
 import { Tier_Map } from "../entities/tier_map";
 import { Admin } from "../entities/admin";
 
@@ -21,7 +21,7 @@ export class HeroResolver {
   async heroes(@Arg("timePeriodId", () => Int) timePeriodId: number): Promise<Tier_Map> {
     try {
       const heroeList: Hero[] = await this.heroRepo.find({where: {time_period: {id: timePeriodId}}});
-      return tierListAssign(heroeList)
+      return newTierThreshold(heroeList)
     } catch(e){
       throw new Error(e)
     }
