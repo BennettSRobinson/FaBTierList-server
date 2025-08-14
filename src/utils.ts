@@ -24,7 +24,7 @@ export const newTierThreshold = (heroes: Hero[]): Tier_Map => {
     eligibleDecks.reduce((sum, d) => sum + Math.pow(d.win_rate - meanWR, 2), 0) / eligibleDecks.length
     );
 
-    // S-tier rule: must be 2 std dev above mean
+    // S-tier rule: must be 1 std dev above mean
     const Z_SCORE_THRESHOLD = 1;
     const sTierExists = eligibleDecks[0].win_rate >= meanWR + Z_SCORE_THRESHOLD * stdDev;
 
